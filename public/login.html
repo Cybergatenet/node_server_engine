@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        form div label, form div label{
+            margin-top: 10px;
+            width: 100%;
+        }
+        button{
+            padding: 5px;
+            background-color: #0035ff;
+            font-weight: white;
+        }
+    </style>
+</head>
+<body>
+    <fieldset>
+        <legend>User Login</legend>
+        <div style="color: red;" id="output"></div>
+        <form method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="">username</label>
+                <input name="username" id="username" type="text" placeholder="Enter Username">
+            </div>
+            <div>
+                <label for="">Password</label>
+                <input name="pwd" type="password" id="pwd" placeholder="Enter Password">
+            </div>
+            <button type="submit" id="btn">Sign In Here</button>
+        </form>
+    </fieldset>
+
+    <script src="./js/jquery.min.js"></script>
+    <script>
+        const btn = $('#btn')
+
+        $('document').ready(
+            $('#btn').on('click', function(e) {
+                e.preventDefault()
+                $.ajax({
+                    method: "POST",
+                    data: {
+                        username: $('#username').val(),
+                        pwd: $('#pwd').val()
+                    },
+                    success: (data) => {
+                        console.log(data)
+                        $('#output').html(data.msg)
+
+                        setTimeout(() => {
+                            $('#output').html('')
+                            window.location.href = "/"
+                        }, 3000)
+                    },
+                    error: (err) => {
+                        console.log(err)
+                    }
+                })
+            })
+        )
+        // let ff = $('form').children().each(input => {
+        //     console.log(input[0])
+            
+        // });
+
+        // console.log(document.forms[0])
+
+        // console.log(ff)
+    </script>
+</body>
+</html>
