@@ -90,7 +90,7 @@ app.get("/email", (req, res) => {
     // main().catch(console.error);
 
     // ##########################################
-    
+let us = "go"
 var transporter = MAILER.createTransport({
     service: 'gmail',
     auth: {
@@ -98,6 +98,7 @@ var transporter = MAILER.createTransport({
       pass: "@123Anabel"
     }
   });
+  
   
   var mailOptions = {
     from: 'abelchinedu2@gmail.com',
