@@ -15,21 +15,9 @@ const TWILIO = require('twilio')(process.env.TWILIO_API, process.env.TWILIO_TOKE
 // const { PORT = 3300 } = process.env.PORT 
 const PORT = 3300 
 
-const number = process.env.TWILIO_NUMBER
+const twilio_number = process.env.TWILIO_NUMBER
 
 // console.log(TWILIO)
-// ####### SEND SMS
-app.get("/sms", (req, res) => {
-    TWILIO.messages.create({
-        body: "This is a test msg",
-        to: '+2347037757724',
-        from: number
-    }).then(data => {
-        console.log("sms sent: ",data)
-    }).catch((err) => console.log("ERROR: ", err))
-
-    res.send("<h2>Send SMS Node</h2>")
-})
 
 app.get("/email", (req, res) => {
     
@@ -90,7 +78,6 @@ app.get("/email", (req, res) => {
     // main().catch(console.error);
 
     // ##########################################
-let us = "go"
 var transporter = MAILER.createTransport({
     service: 'gmail',
     auth: {
@@ -204,17 +191,17 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
     const { user } = req.session
-    res.send(`<h1>Hello Page</h1>
-    ${user ? `<a href="/dashboard">Dashboard</a>
+    res.send(`<div class="container"><h1>Naprima Cloud Hosting Demo Home Page</h1>
+    ${user ? `<a  class="navlink" href="/dashboard">Dashboard</a>
         
         <form method="POST" action="/logout">
-            <a href="/logout">Logout</a>
+            <a class="navlink" href="/logout">Logout</a>
         </form>`
         :
-        `<a href="/login">Login</a>
-        <a href="/register">Register</a>`
+        `<a class="navlink" href="/login">Login</a>
+        <a class="navlink" href="/register">Register</a>`
     }        
-    `);
+    </div>`);
 })
 
 app.post('/login', UserLoggedIn, (req, res) => {
@@ -236,7 +223,7 @@ app.post('/login', UserLoggedIn, (req, res) => {
     res.redirect('/login')
 })
 
-app.get('/login',UserLoggedIn, (req,res) => {
+app.get('/login', UserLoggedIn, (req,res) => {
     res.send(`<legend>User Login</legend>
     <div style="color: red;" id="output"></div>
     <form method="POST" action="/login">
@@ -251,14 +238,77 @@ app.get('/login',UserLoggedIn, (req,res) => {
         <button type="submit" id="btn">Sign In Here</button>
     </form>
     <a href="/register">Register</a>
+    <a href="/reset">Forgot Password?</a>
 </fieldset>`);
 
 })
 
+// Password Reset
+// ####### SEND SMS
+app.get("/reset", UserLoggedIn, (req, res) => {
+    res.send(`<legend>Reset Password</legend>
+    <div style="color: red;" id="output"></div>
+    <form method="POST" action="/reset">
+        <div>
+            <label for="username">Username</label>
+            <input name="username" id="username" type="text" placeholder="Enter Username">
+        </div>
+        <div>
+            <label for="tel">Phone Number</label>
+            <input name="pwd" type="tel" id="tel" placeholder="Enter Phone number">
+        </div>
+        <button type="submit" id="btn">Send OTP</button>
+    </form>
+    <a href="/register">Register</a> : <a href="/login">Login</a>
+</fieldset>`);
+})
+
+app.post("/reset",UserLoggedIn, (req, res) => {
+    const { username, number } = req.body
+    if(User.some(user_name => username === user_name)){
+        const otp = (UUID.v4()).slice(1,7)
+        req.session.otp = otp
+        TWILIO.messages.create({
+            body: `Your OTP: ${otp}`,
+            to: number,
+            from: twilio_number
+        }).then(data => {
+            console.log("SMS Sent: ",data)
+            return res.redirect('/verifyUser')
+        }).catch((err) => {
+            return res.redirect('/reset')
+        })
+    }
+    res.redirect('/reset');
+})
+
+// Verify OTP
+app.get("/verifyUser",UserLoggedIn, (req,res) =>{
+    // form to get user's OTP
+    res.send(`<form action="/verifyUser" method="post">
+    <label for="">Enter OTP</label>
+    <input type="tel" placeholder="Enter OTP here" name="user_otp">
+    <input type="submit">
+    </form>`)
+})
+
+app.post("/verifyUser",UserLoggedIn, (req,res) =>{
+    // verify OTP and display new password and redirect to login
+    const { otp } = req.session
+    const { user_otp } = req.body
+    if(otp === user_otp){
+        // Reset Pwd || Redirect to Login
+        return res.redirect('/login')
+    }else{
+        return res.redirect('/verifyUser')
+    }
+})
+
+
 // Register
 
 app.get('/register', UserLoggedIn, (req,res) => {
-    res.send(`<legend>User Login</legend>
+    res.send(`<legend>Register User</legend>
     <div style="color: red;" id="output"></div>
     <form method="POST" enctype="multipart/form-data">
         <div>
