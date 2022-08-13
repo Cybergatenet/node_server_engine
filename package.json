@@ -2,9 +2,9 @@
   "name": "nodeClass",
   "version": "1.0.0",
   "description": "",
-  "main": "./server/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "node index",
     "dev": "nodemon index",
     "app": "nodemon app"
   },
