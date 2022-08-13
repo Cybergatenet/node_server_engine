@@ -12,8 +12,9 @@ const FS = require('fs')
 const MAILER = require('nodemailer')
 require('dotenv').config()
 const TWILIO = require('twilio')(process.env.TWILIO_API, process.env.TWILIO_TOKEN)
-// const { PORT = 3300 } = process.env.PORT 
-const PORT = 3300 
+// const { PORT = 3301 } = process.env.PORT 
+
+const PORT = process.env.PORT || 3301
 
 const twilio_number = process.env.TWILIO_NUMBER
 
